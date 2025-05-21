@@ -55,8 +55,9 @@ const createWindow = () => {
         mainWindow.webContents.openDevTools();
     }
     else {
+        const indexPath = path.join(electron_1.app.getAppPath(), 'dist', 'index.html');
         mainWindow.loadURL(url.format({
-            pathname: path.join(__dirname, '../index.html'),
+            pathname: indexPath,
             protocol: 'file:',
             slashes: true,
         }));

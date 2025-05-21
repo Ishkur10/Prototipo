@@ -22,9 +22,11 @@ const createWindow = () => {
     mainWindow.loadURL('http://localhost:5173');
     mainWindow.webContents.openDevTools();
   } else {
+
+    const indexPath = path.join(app.getAppPath(), 'dist', 'index.html');
     mainWindow.loadURL(
       url.format({
-        pathname: path.join(__dirname, '../index.html'),
+        pathname: indexPath,
         protocol: 'file:',
         slashes: true,
       })

@@ -12,7 +12,9 @@
     "electron:start": "electron main.js",
     "lint": "eslint .",
     "preview": "vite preview",
-    "clean": "node cleanup.js"
+    "clean": "node cleanup.js",
+    "debug": "electron debug-paths.js",
+    "full-build": "node complete-build.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -55,10 +57,7 @@
     "appId": "com.eyecos.irisanalyzer",
     "productName": "Iris Analyzer",
     "files": [
-    "dist/**/*",
-    "out/**/*",
-    "main.js",
-    "preload.js"
+    "dist/**/*"
   ],
   "asar": false,
     "extraResources": [

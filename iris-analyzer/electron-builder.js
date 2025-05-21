@@ -5,10 +5,7 @@ build({
     appId: "com.eyecos.irisanalyzer",
     productName: "Iris Analyzer",
     files: [
-      "dist/**/*",
-      "main.js", 
-      "preload.js", 
-      "out/**/*"
+      "dist/**/*"
     ],
     asar: false,
     extraResources: [
