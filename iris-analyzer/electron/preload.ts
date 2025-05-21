@@ -1,0 +1,5 @@
+import { contextBridge, ipcRenderer } from 'electron';
+
+contextBridge.exposeInMainWorld('electronAPI', {
+  processIrisImage: (imagePath: string) => ipcRenderer.invoke('process-iris-image', imagePath),
+});

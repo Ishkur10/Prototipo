@@ -3,12 +3,14 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "main": "main.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "electron:dev": "concurrently \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && electron .\"",
-    "electron:build": "npm run build && electron-builder",
-    "electron:start": "electron .",
+    "build:electron": "tsc -p electron/tsconfig.json",
+    "electron:dev": "npm run build:electron && concurrently \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && electron main.js\"",
+    "electron:build": "npm run build:electron && npm run build && electron-builder",
+    "electron:start": "electron main.js",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -21,6 +23,7 @@
     "canvas": "^3.1.0",
     "classnames": "^2.5.1",
     "d3": "^7.9.0",
+    "electron-is-dev": "^2.0.0", 
     "opencv.js": "^1.2.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
@@ -48,23 +51,36 @@
     "vite": "^6.3.5",
     "wait-on": "^8.0.3"
   },
-  "compilerOptions": {
-    "target": "ES2020",
-    "useDefineForClassFields": true,
-    "lib": ["ES2020", "DOM", "DOM.Iterable"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-    "moduleResolution": "bundler",
-    "allowImportingTsExtensions": true,
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "forceConsistentCasingInFileNames": true
-  },
-  "include": ["src"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "build": {
+    "appId": "com.eyecos.irisanalyzer",
+    "productName": "Iris Analyzer",
+    "files": [
+    "dist/**/*",
+    "out/**/*"
+  ],
+  "asar": false,
+    "extraResources": [
+      {
+        "from": "resources/prueba_electron-1.0-SNAPSHOT.jar",
+        "to": "prueba_electron.jar"
+      }
+    ],
+    "directories": {
+      "buildResources": "resources",
+      "output": "release"
+    },
+    "mac": {
+      "category": "public.app-category.medical"
+    },
+    "win": {
+      "target": ["nsis"]
+    },
+    "linux": {
+      "target": ["AppImage", "deb"]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  }
 }
