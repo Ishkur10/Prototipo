@@ -3,14 +3,9 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
-  base: './', // Critical for Electron apps - use relative paths
+  base: './', 
   build: {
     outDir: 'dist',
-    emptyOutDir: true,
-    rollupOptions: {
-      output: {
-        manualChunks: undefined // Optional: prevents code splitting for Electron
-      }
-    }
+    emptyOutDir: true
   }
 })

@@ -1,0 +1,16 @@
+{
+  "directories": {
+    "app": "./app",
+    "output": "release"
+  },
+  "files": [
+    "**/*"
+  ],
+  "asar": false,
+  "extraResources": [],
+  "win": {
+    "target": [
+      "portable"
+    ]
+  }
+}

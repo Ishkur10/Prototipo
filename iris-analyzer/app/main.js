@@ -1,46 +1,47 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
-import * as isDev from 'electron-is-dev';
-import * as path from 'path';
-import * as url from 'url';
-import { exec } from 'child_process';
-import * as fs from 'fs';
-import * as os from 'os';
 
-let mainWindow: BrowserWindow | null;
+const { app, BrowserWindow, ipcMain } = require('electron');
+const path = require('path');
+const url = require('url');
+const fs = require('fs');
+const { exec } = require('child_process');
+const os = require('os');
 
-const createWindow = () => {
+// Log some diagnostic information
+console.log('App starting...');
+console.log('App path:', app.getAppPath());
+console.log('Current directory:', __dirname);
+
+let mainWindow;
+
+function createWindow() {
   mainWindow = new BrowserWindow({
     width: 1200,
     height: 800,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
+      // This is the critical path - we need to make sure it's correctly referencing preload.js
+      preload: path.join(app.getAppPath(), 'preload.js'),
       contextIsolation: true,
       nodeIntegration: false,
     },
   });
 
-  if (isDev || process.env.NODE_ENV === 'development') {
-  console.log('Running in development mode, connecting to dev server');
-  mainWindow.loadURL('http://localhost:5173');
-  mainWindow.webContents.openDevTools();
-} else {
-  console.log('Running in production mode, loading from file');
+  // Load the React app from the correct location
   const indexPath = path.join(app.getAppPath(), 'dist', 'index.html');
-  console.log('Attempting to load:', indexPath);
+  console.log('Loading from:', indexPath);
   
-  mainWindow.loadURL(
-    url.format({
-      pathname: indexPath,
-      protocol: 'file:',
-      slashes: true,
-    })
-  );
-}
+  mainWindow.loadURL(url.format({
+    pathname: indexPath,
+    protocol: 'file:',
+    slashes: true,
+  }));
+
+  // Uncomment to debug in packaged app
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.on('closed', () => {
     mainWindow = null;
   });
-};
+}
 
 app.on('ready', createWindow);
 
@@ -56,13 +57,13 @@ app.on('activate', () => {
   }
 });
 
-
+// Path to the JAR file
 const jarPath = path.join(app.getAppPath(), 'resources', 'prueba_electron.jar');
 
+// IPC handler for iris image processing
 ipcMain.handle('process-iris-image', async (event, imagePath) => {
   return new Promise((resolve, reject) => {
     if (imagePath.startsWith('data:')) {
-
       const base64Data = imagePath.split(',')[1];
       const tempFilePath = path.join(os.tmpdir(), `temp-iris-${Date.now()}.png`);
       
@@ -70,19 +71,22 @@ ipcMain.handle('process-iris-image', async (event, imagePath) => {
       imagePath = tempFilePath;
     }
     
+    console.log('Processing image with Java:', imagePath);
+    console.log('Using JAR at:', jarPath);
+    
     exec(`java -jar "${jarPath}" "${imagePath}"`, (error, stdout, stderr) => {
       if (imagePath.startsWith(os.tmpdir())) {
-        try { fs.unlinkSync(imagePath); } catch (e) { /* ignorar errores */ }
+        try { fs.unlinkSync(imagePath); } catch (e) { /* ignore errors */ }
       }
       
       if (error) {
-        console.error('Error ejecutando el JAR:', error);
+        console.error('Error executing JAR:', error);
         reject(error);
         return;
       }
       
       if (stderr) {
-        console.error('Error en la salida del JAR:', stderr);
+        console.error('Error in JAR output:', stderr);
         reject(new Error(stderr));
         return;
       }
@@ -91,7 +95,7 @@ ipcMain.handle('process-iris-image', async (event, imagePath) => {
         const result = JSON.parse(stdout);
         resolve(result);
       } catch (e) {
-        console.error('Error analizando la salida JSON:', e);
+        console.error('Error parsing JSON output:', e);
         reject(e);
       }
     });

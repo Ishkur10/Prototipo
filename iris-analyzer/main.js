@@ -34,6 +34,7 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
+const isDev = __importStar(require("electron-is-dev"));
 const path = __importStar(require("path"));
 const url = __importStar(require("url"));
 const child_process_1 = require("child_process");
@@ -50,12 +51,15 @@ const createWindow = () => {
             nodeIntegration: false,
         },
     });
-    if (process.env.NODE_ENV === 'development') {
+    if (isDev || process.env.NODE_ENV === 'development') {
+        console.log('Running in development mode, connecting to dev server');
         mainWindow.loadURL('http://localhost:5173');
         mainWindow.webContents.openDevTools();
     }
     else {
+        console.log('Running in production mode, loading from file');
         const indexPath = path.join(electron_1.app.getAppPath(), 'dist', 'index.html');
+        console.log('Attempting to load:', indexPath);
         mainWindow.loadURL(url.format({
             pathname: indexPath,
             protocol: 'file:',
