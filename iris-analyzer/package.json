@@ -2,17 +2,17 @@
   "name": "iris-analyzer",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "main": "main.js",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
-    "build:electron": "tsc -p electron/tsconfig.json",
+    "build:electron": "npm run clean && tsc -p electron/tsconfig.json",
     "electron:dev": "npm run build:electron && concurrently \"cross-env BROWSER=none npm run dev\" \"wait-on http://localhost:5173 && electron main.js\"",
-    "electron:build": "npm run build:electron && npm run build && electron-builder",
+    "electron:build": "npm run build:electron && npm run build && node copy-electron-files.js && node electron-builder.js",
     "electron:start": "electron main.js",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "clean": "node cleanup.js"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -56,7 +56,9 @@
     "productName": "Iris Analyzer",
     "files": [
     "dist/**/*",
-    "out/**/*"
+    "out/**/*",
+    "main.js",
+    "preload.js"
   ],
   "asar": false,
     "extraResources": [
@@ -73,7 +75,7 @@
       "category": "public.app-category.medical"
     },
     "win": {
-      "target": ["nsis"]
+      "target": ["portable"]
     },
     "linux": {
       "target": ["AppImage", "deb"]
