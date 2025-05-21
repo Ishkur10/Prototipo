@@ -4,3 +4,6 @@ const electron_1 = require("electron");
 electron_1.contextBridge.exposeInMainWorld('electronAPI', {
     processIrisImage: (imagePath) => electron_1.ipcRenderer.invoke('process-iris-image', imagePath),
 });
+electron_1.contextBridge.exposeInMainWorld('diagnostics', {
+    testJavaBackend: () => electron_1.ipcRenderer.invoke('test-java-backend'),
+});

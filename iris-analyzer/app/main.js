@@ -36,7 +36,7 @@ function createWindow() {
   }));
 
   // Uncomment to debug in packaged app
-  // mainWindow.webContents.openDevTools();
+  mainWindow.webContents.openDevTools();
 
   mainWindow.on('closed', () => {
     mainWindow = null;
